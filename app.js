@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const NotFoundError = require('./errors/NotFoundError');
 const {
   createUser,
   login,
@@ -28,6 +29,10 @@ app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 
 app.use(errors());
+
+app.use('*', () => {
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
+});
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;

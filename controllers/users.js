@@ -61,6 +61,16 @@ function errorHandling(err) {
   }
 }
 
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(new Error('ValidationError'))
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      throw new NotFoundError(err.message);
+    })
+    .catch(next);
+};
+
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 

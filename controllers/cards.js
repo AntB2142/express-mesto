@@ -24,8 +24,11 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
-    .orFail(new Error('ValidationError'))
     .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Запрашиваемая карточка не найдена');
+      }
+
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалять чужие карточки.');
       }
@@ -35,9 +38,6 @@ module.exports.deleteCard = (req, res, next) => {
           res.status(200).send(data);
         })
         .catch(next);
-    })
-    .catch((err) => {
-      throw new NotFoundError(err.message);
     })
     .catch(next);
 };
