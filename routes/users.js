@@ -15,10 +15,10 @@ const {
   getCurrentUser,
 } = require('../controllers/users');
 
-routes.get('/users', getUsers);
-routes.get('/users/me', idValidation, getCurrentUser);
-routes.get('/users/:id', idValidation, getUserById);
-routes.patch('/users/me', userUpdateValidation, updateUser);
-routes.patch('/users/me/avatar', avatarUpdateValidation, updateAvatar);
+routes.get('/', getUsers);
+routes.get('/me', idValidation, getCurrentUser);
+routes.get('/:id', idValidation, getUserById);
+routes.patch('/me', userUpdateValidation, updateUser);
+routes.patch('/me/avatar', avatarUpdateValidation, updateAvatar);
 
 module.exports = routes;

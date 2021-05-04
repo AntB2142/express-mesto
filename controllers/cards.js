@@ -24,22 +24,26 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.id)
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
+    })
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
-      }
-
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError('Вы не можете удалять чужие карточки.');
+        throw new ForbiddenError(
+          'Вы не можете удалять чужие карточки.',
+        );
       }
 
       Card.findByIdAndRemove(req.params.id)
-        .then((data) => {
-          res.status(200).send(data);
-        })
+        .then((data) => res.send(data))
         .catch(next);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new ValidationError('Переданы некорректные данные'));
+      }
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
